@@ -24,3 +24,6 @@ Currently testing the Unit with hard coded pressure min/max and max runtime and 
 
 # Futures:
 *  User programmable Pressure and Time Parameters directly on WEMOS at run time.
+
+![Unit Image](https://github.com/casmer/well-pump-control/blob/main/Images/_full_unit.jpg)
+![Display Image](https://github.com/casmer/well-pump-control/blob/main/Images/_display.jpg)
