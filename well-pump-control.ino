@@ -1,12 +1,7 @@
-
-
 #include <LiquidCrystal_I2C.h>
-
 LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x3F for a 16 chars and 2 line display
 
 #include <ESP8266WiFi.h>
-#include <I2S.h>
-
 /*
 
 */
@@ -20,24 +15,26 @@ LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x3F for a 16 chars
 //int D6=12; //IO, MISO
 //int D7=13; //IO, MOSI
 //int D8=5;  //IO, 10k Pull-down, SS
-
+// constant for seconds in a minute.
+#define MINUTE 60
 // Configuration
 int setPressure = 45;
 int minPressure = 30;
 int minPressureDebounceCount = 3;
-
-//
-#define MINUTE 60
+int maxRunTime = 30*MINUTE;
+int pumpCooldownTime = 5*MINUTE;
+// Pin Assignments
 int relayPin = D5;
 int blinkPin = D4;
+
+//state variables
 int A0Value = 0;
 int measuredPressure = 0;
 int lastMeasuredPressure = 0;
 int pumpOnTime = 0;
 int pumpOnUnderPressureTime = 0;
 int minPressureCounter = 0;
-int maxRunTime = 5*MINUTE;
-int pumpCooldownTime = 5*MINUTE;
+
 //because we use time pump was on for cool down we need to add it to the max run time for comparison.
 int  pumpCooldownCheckTime = pumpCooldownTime;
 bool relayIsOn = false;
