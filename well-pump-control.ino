@@ -1,7 +1,17 @@
-#include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x3F for a 16 chars and 2 line display
+
 
 #include <ESP8266WiFi.h>
+
+#include <loopTimer.h>
+// install the loopTimer library from https://www.forward.com.au/pfod/ArduinoProgramming/RealTimeArduino/TimingDelaysInArduino.html
+// loopTimer.h also needs the millisDelay library installed from https://www.forward.com.au/pfod/ArduinoProgramming/TimingDelaysInArduino.html
+#include <BufferedOutput.h>
+// install SafeString library from Library manager or from https://www.forward.com.au/pfod/ArduinoProgramming/SafeString/index.html
+// to get BufferedOutput. See https://www.forward.com.au/pfod/ArduinoProgramming/Serial_IO/index.html for a full tutorial
+// on Arduino Serial I/O that Works
+#include "RelayControl.h"
+#include "StatusHandler.h"
+#include "PressureSensor.h"
 /*
 
 */
@@ -23,166 +33,110 @@ int minPressure = 30;
 int minPressureDebounceCount = 3;
 int maxRunTime = 30*MINUTE;
 int pumpCooldownTime = 5*MINUTE;
+int blinkTime_ms = 1000;
+int pressureCheckTime_ms = 500;
+int statusUpdateTime_ms = 500;
+createBufferedOutput(bufferedOut, 80, DROP_UNTIL_EMPTY);
+
 // Pin Assignments
 int relayPin = D5;
-int blinkPin = D4;
+int blinkPin = BUILTIN_LED;
+int pressureSensorPin = A0;
 
+//delay objects
+millisDelay ledDelay;
+millisDelay pressureCheckDelay;
+millisDelay statusUpdateDelay;
+RelayControl relayControl;
+StatusHandler statusHandler;
+PressureSensor pressureSensor;
 //state variables
-int A0Value = 0;
-int measuredPressure = 0;
-int lastMeasuredPressure = 0;
+
+bool ledOn = false;
 int pumpOnTime = 0;
 int pumpOnUnderPressureTime = 0;
 int minPressureCounter = 0;
 
 //because we use time pump was on for cool down we need to add it to the max run time for comparison.
 int  pumpCooldownCheckTime = pumpCooldownTime;
-bool relayIsOn = false;
-// A0 Reading value at simulated 100 PSI (5v)
-int A0at100=939;
-// A0 Reading value at simulated 0 PSI (about 0v)
-int A0at0=7;
+
+
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(relayPin, OUTPUT);
   pinMode(blinkPin, OUTPUT);
-  pinMode(A0, INPUT);
-
+  pinMode(pressureSensorPin, INPUT);
+  relayControl.setRelayPin(relayPin);
+  pressureSensor.setup(pressureSensorPin);
   Serial.begin(74880);
- 
-  lcd.init();
-  lcd.clear();         
-  lcd.backlight();      // Make sure backlight is on
+  bufferedOut.connect(Serial);
+  statusHandler.setup();
   
-  // Print a message on both lines of the LCD.
-  lcd.setCursor(0,0);   //Set cursor to character 2 on line 0
-  lcd.print("                ");
+  ledDelay.start(blinkTime_ms);
+  pressureCheckDelay.start(pressureCheckTime_ms);
+  statusUpdateDelay.start(statusUpdateTime_ms)
   
-  lcd.setCursor(0,1);   //Move cursor to character 2 on line 1
-  lcd.print("                ");
 }
 
-
-void readPressure()
+void blinkLed()
 {
-  
-  A0Value = analogRead(A0);
-  
-  measuredPressure = map(A0Value,A0at0,A0at100,0,100);
-  if (lastMeasuredPressure != measuredPressure)
+  if (ledDelay.justFinished()) 
   {
-    lastMeasuredPressure = measuredPressure;
-    Serial.print("A:");
-    Serial.print(A0Value);
-    Serial.print(" Pressure:");
-    Serial.println(measuredPressure);
-    Serial.print(" Last:");
-    Serial.println(lastMeasuredPressure);
-    lcd.setCursor(0,0);   //Move cursor to character 1 on line 1
-    lcd.print("P:    ");
-    lcd.setCursor(2,0);   //Move cursor to character 3 on line 1
-    lcd.print(measuredPressure);
+    ledDelay.repeat(); 
+    ledOn = !ledOn;    
+    digitalWrite(blinkPin, ledOn ? HIGH : LOW); 
+  } 
+}
+
+void statusUpdate()
+{
+  if (statusUpdateDelay.justFinished())
+  {
+    statusUpdateDelay.repeat();
+    //TODO: Status update.
   }
 }
 
-void RelayOn()
-{
-  if (relayIsOn==false)
-  {
-    Serial.println("Relay On");
-    
-  }
-  lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
-  lcd.print("Pump On         ");
-  relayIsOn=true;
-  minPressureCounter=0;
-  digitalWrite(relayPin, HIGH);   // relay on
-}
-void RelayOff()
-{
-  if (relayIsOn)
-  {
-    Serial.println("Relay Off");
 
-  }
-  lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
-  lcd.print("Pump Off        ");
-  lcd.setCursor(9,0);   //Move cursor to character 1 on line 2
-  lcd.print("T-00:00");
-  relayIsOn=false;
-  digitalWrite(relayPin, LOW);   // relay off
-}
-
-void printTime(int line, int startPos, int timeInS)
-{
-  int min=timeInS/60;
-      int sec=timeInS%60;
-      lcd.setCursor(startPos,line);   //Move cursor to character 1 on line 2
-      if (min<10)
-      {
-        lcd.print(0);
-      }
-      lcd.print(min);
-      lcd.print(":");
-      if (sec<10)
-      {
-        lcd.print(0);
-      }
-      lcd.print(sec);
-}
 void processPressure()
 {
-  readPressure();
-  if (measuredPressure >= setPressure)
+  pressureSensor.readPressure();
+  if (pressureSensor.getMeasuredPressure() >= setPressure)
   {
-    RelayOff();
+    relayControl.RelayOff();
     pumpOnTime=0;
     pumpOnUnderPressureTime=0;
     minPressureCounter=0;
   } else if (pumpOnUnderPressureTime >= maxRunTime)
   {
-    Serial.println("Max Under Pressure Runtime Exceeded");
-    RelayOff();
+    relayControl.RelayOff();
   } else
-  if (measuredPressure < minPressure && pumpOnTime <= 0)
+  if (pressureSensor.getMeasuredPressure() < minPressure && pumpOnTime <= 0)
   {
     if (minPressureCounter >=minPressureDebounceCount)
     {
-      Serial.println("Turning on Relay");
       pumpOnTime=1;
       pumpOnUnderPressureTime=1;
       minPressureCounter=0;
-      RelayOn();
+      relayControl.RelayOn();
     } else {
-      Serial.println("Low Pressure Wait.");
-      lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
-      lcd.print("Low Press wait. ");
+      statusHandler.showMessage("Low Press wait.");
       minPressureCounter++;
     } 
   } 
   else
   {
-    if (relayIsOn==false)
+    if (relayControl.getRelayIsOn()==false)
     {
-      lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
-      lcd.print("Pump Off        ");
+      statusHandler.showMessage("Pump Off");
     }
   }
-  if (measuredPressure < setPressure && pumpOnTime > 0)
-  {
-    if (pumpOnTime==1)
-    {
-    Serial.print("pumpOnTime: ");
-    Serial.println(pumpOnTime);
-
-    } else {
-      Serial.print(".");
-    }
-   
+  if (pressureSensor.getMeasuredPressure() < setPressure && pumpOnTime > 0)
+  {   
     pumpOnTime++;
-    if (measuredPressure < minPressure)
+    if (pressureSensor.getMeasuredPressure() < minPressure)
     {
       pumpOnUnderPressureTime++;
     } 
@@ -193,29 +147,26 @@ void processPressure()
   }
   if (pumpOnTime>0)
   {
-    if (relayIsOn==false)
+    if (relayControl.getRelayIsOn()==false)
     {
-      Serial.print("Cool Down Check ");
       if (pumpCooldownCheckTime >= pumpCooldownTime)
       {
-        Serial.println("Reset Pump Run Time");
         pumpOnTime = 0;
         pumpCooldownCheckTime=0;
         pumpOnUnderPressureTime=0;
         minPressureCounter=0;
-      } else {
+      }
+      else 
+      {
         pumpCooldownCheckTime++;
-        Serial.println("Pump Cool Down");
-        lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
-        lcd.print("Pump Cool   ");
-        printTime(1,11,pumpCooldownCheckTime);
+        statusHandler.showMessage("Pump Cool");
+        statusHandler.printTime(1,11,pumpCooldownCheckTime);
       }
     } 
     else
     {
-      lcd.setCursor(8,0);   //Move cursor to character 1 on line 2
-      lcd.print("RT-00:00");
-      printTime(0,11,pumpOnTime);
+      statusHandler.showMessage("RT-00:00");
+      statusHandler.printTime(0,11,pumpOnTime);
 
       pumpCooldownCheckTime=0; 
     }
