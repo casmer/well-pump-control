@@ -19,7 +19,7 @@ LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x3F for a 16 chars
 #define MINUTE 60
 // Configuration
 int setPressure = 45;
-int minPressure = 30;
+int minPressure = 35;
 int minPressureDebounceCount = 3;
 int maxRunTime = 30*MINUTE;
 int pumpCooldownTime = 5*MINUTE;
@@ -41,7 +41,7 @@ bool relayIsOn = false;
 // A0 Reading value at simulated 100 PSI (5v)
 int A0at100=939;
 // A0 Reading value at simulated 0 PSI (about 0v)
-int A0at0=7;
+int A0at0=90;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -145,8 +145,18 @@ void processPressure()
   {
     Serial.println("Max Under Pressure Runtime Exceeded");
     RelayOff();
-  } else
-  if (measuredPressure < minPressure && pumpOnTime <= 0)
+  }
+  else if (measuredPressure < 0)
+  {
+    Serial.println("Pressure Reading ERROR");
+    lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
+    lcd.print("Pressure ERROR. ");
+    if (relayIsOn)
+    {
+      RelayOff();
+    }
+  }
+  else if (measuredPressure < minPressure && pumpOnTime <= 0)
   {
     if (minPressureCounter >=minPressureDebounceCount)
     {
@@ -170,7 +180,7 @@ void processPressure()
       lcd.print("Pump Off        ");
     }
   }
-  if (measuredPressure < setPressure && pumpOnTime > 0)
+  if (measuredPressure < setPressure && pumpOnTime > 0 && measuredPressure >= 0)
   {
     if (pumpOnTime==1)
     {
