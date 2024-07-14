@@ -29,6 +29,13 @@
 //int D6=12; //IO, MISO
 //int D7=13; //IO, MOSI
 //int D8=5;  //IO, 10k Pull-down, SS
+
+#include "MAX6675.h"
+const int selectPin = D7;
+MAX6675 thermoCouple(selectPin, &SPI);
+uint32_t thermoCoupleSpeed = 500; 
+float tempF = 0.0f;
+
 // constant for seconds in a minute.
 #define MINUTE 60
 // Configuration
@@ -91,6 +98,9 @@ void setup() {
   
   bufferedOut.connect(Serial, 74880);
   statusHandler.setup();
+  
+  SPI.begin();
+  thermoCouple.begin();
 
   ledDelay.start(blinkTime_ms);
   pressureCheckDelay.start(pressureCheckTime_ms);
@@ -112,8 +122,32 @@ void statusUpdate()
 {
   if (statusUpdateDelay.justFinished())
   {
+    uint32_t start, stop;
+
+    ////////// THERMOCOUPLE //////////////////
+    //thermoCouple.setSPIspeed(thermoCoupleSpeed);
+
+    start = micros();
+    int status = thermoCouple.read();
+    stop = micros();
+    float temp = thermoCouple.getTemperature();
+
+    tempF = (temp * 1.8) + 32.0;
+    Serial.print(millis());
+    // Serial.print("\tspeed: ");
+    // Serial.print(thermoCoupleSpeed / 1000);
+    Serial.print("\tstatus: ");
+    Serial.print(status);
+    Serial.print("\ttemp: ");
+    Serial.print(temp);
+    Serial.print("\tus: ");
+    Serial.println(stop - start);
+      ////////// THERMOCOUPLE //////////////////
+    Serial.print("temp:");
+    Serial.println(tempF, 2);
+
     statusUpdateDelay.repeat();
-    //TODO: Status update.
+    
   }
 }
 
