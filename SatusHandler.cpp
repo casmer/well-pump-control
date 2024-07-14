@@ -21,12 +21,16 @@ void StatusHandler::setup()
 
 void StatusHandler::updatePressure(int measuredPressure)
 {
-    lcd.setCursor(0,0);   //Move cursor to character 1 on line 1
-    lcd.print("P:    ");
-    lcd.setCursor(2,0);   //Move cursor to character 3 on line 1
-    lcd.print(measuredPressure);
+    static int lastPressure=-1;
+    if (lastPressure!=measuredPressure)
+    {
+      lcd.setCursor(0,0);   //Move cursor to character 1 on line 1
+      lcd.print("P:    ");
+      lcd.setCursor(2,0);   //Move cursor to character 3 on line 1
+      lcd.print(measuredPressure);
+      lastPressure=measuredPressure;
+    }
 }
-
 
 void StatusHandler::printTime(int line, int startPos, int timeInS)
 {
@@ -50,6 +54,6 @@ void StatusHandler::showMessage(const char* message)
 {
     lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
     static char message_str[17];
-    sprintf(message_str, "%17s", message);
+    sprintf(message_str, "%16s", message);
     lcd.print(message_str);
 }

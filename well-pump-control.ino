@@ -1,6 +1,6 @@
 
 
-#include <ESP8266WiFi.h>
+#include <ArduinoBLE.h>
 
 #include <loopTimer.h>
 // install the loopTimer library from https://www.forward.com.au/pfod/ArduinoProgramming/RealTimeArduino/TimingDelaysInArduino.html
@@ -12,6 +12,10 @@
 #include "RelayControl.h"
 #include "StatusHandler.h"
 #include "PressureSensor.h"
+#include "states/State.h"
+#include "states/StatePumpOff.h"
+#include "states/StatePumpOn.h"
+#include "states/StatePumpLowError.h"
 /*
 
 */
@@ -35,48 +39,62 @@ int maxRunTime = 30*MINUTE;
 int pumpCooldownTime = 5*MINUTE;
 int blinkTime_ms = 1000;
 int pressureCheckTime_ms = 500;
-int statusUpdateTime_ms = 500;
+int statusUpdateTime_ms = 2000;
 createBufferedOutput(bufferedOut, 80, DROP_UNTIL_EMPTY);
-
 // Pin Assignments
 int relayPin = D5;
-int blinkPin = BUILTIN_LED;
+int blinkPin = LED_BUILTIN;
 int pressureSensorPin = A0;
 
 //delay objects
 millisDelay ledDelay;
 millisDelay pressureCheckDelay;
 millisDelay statusUpdateDelay;
+
+// interface handlers
 RelayControl relayControl;
 StatusHandler statusHandler;
 PressureSensor pressureSensor;
 //state variables
+State states[3]
+  {
+    StatePumpOff(statusHandler, pressureSensor, relayControl), 
+    StatePumpOn(statusHandler, pressureSensor, relayControl), 
+    StatePumpLowError(statusHandler, pressureSensor, relayControl) 
+  };
 
 bool ledOn = false;
 int pumpOnTime = 0;
-int pumpOnUnderPressureTime = 0;
+int pumpOnUnderPressureTime = 0; 
 int minPressureCounter = 0;
+
 
 //because we use time pump was on for cool down we need to add it to the max run time for comparison.
 int  pumpCooldownCheckTime = pumpCooldownTime;
 
-
+/*
+I2C device found at address 0x27  ! LCD
+I2C device found at address 0x48  !
+*/
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
+  
+
   pinMode(relayPin, OUTPUT);
   pinMode(blinkPin, OUTPUT);
   pinMode(pressureSensorPin, INPUT);
   relayControl.setRelayPin(relayPin);
-  pressureSensor.setup(pressureSensorPin);
+  pressureSensor.setup();\
   Serial.begin(74880);
-  bufferedOut.connect(Serial);
-  statusHandler.setup();
   
+  bufferedOut.connect(Serial, 74880);
+  statusHandler.setup();
+
   ledDelay.start(blinkTime_ms);
   pressureCheckDelay.start(pressureCheckTime_ms);
-  statusUpdateDelay.start(statusUpdateTime_ms)
+  statusUpdateDelay.start(statusUpdateTime_ms);
   
 }
 
@@ -103,6 +121,7 @@ void statusUpdate()
 void processPressure()
 {
   pressureSensor.readPressure();
+  statusHandler.updatePressure(pressureSensor.getMeasuredPressure());
   if (pressureSensor.getMeasuredPressure() >= setPressure)
   {
     relayControl.RelayOff();
@@ -179,11 +198,9 @@ void processPressure()
 void loop() {
   //
   
-  
-  digitalWrite(blinkPin, HIGH);   // turn the LED on (shows something is running on board)
   processPressure();
-  delay(500);                       // wait for a second
-  digitalWrite(blinkPin, LOW);    // turn the LED off (shows something is running on board)
-  delay(500);                       // wait for a second
+  delay(100);                       // wait for a second
+  blinkLed();
+  statusUpdate();  
   
 }
