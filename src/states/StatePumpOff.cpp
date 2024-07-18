@@ -1,13 +1,13 @@
-#include "StatePumpOff.h"
-
+#include "states/StatePumpOff.h"
+#include "PumpControlConfig.h"
 
 SystemState StatePumpOff::tick()
 {
     SystemState nextState = SystemState::PUMP_OFF;
-
-    if (_pressureSensor.getMeasuredPressure() <= _statusHandler.getSetPressureLow())
+    _relayControl.RelayOff();
+    if (_pressureSensor.getMeasuredPressure() <= CONFIG().getSetPressureLow())
     {
-        if (_lowPressureWait < _statusHandler.getLowPressureDelay())
+        if (_lowPressureWait < CONFIG().getLowPressureDelay_ms())
         {
             _statusHandler.showMessage("Low Press wait.");
             _lowPressureWait++;
@@ -23,8 +23,9 @@ SystemState StatePumpOff::tick()
     return nextState;
 };
 
-void StatePumpOff::enter() 
+void StatePumpOff::enterState() 
 {
-    statusHandler.showMessage("Pump Off");
+    _relayControl.RelayOff();
+    _statusHandler.showMessage("Pump Off");
     _lowPressureWait=0;
 };

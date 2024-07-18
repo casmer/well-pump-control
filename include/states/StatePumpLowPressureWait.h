@@ -3,17 +3,16 @@
 #define STATE_PUMP_ON_H
 #include "State.h"
 
-class StatePumpOn : public State
+class StatePumpLowPressureWait : public State
 {
 
     public:
-        StatePumpOn(StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl) :
+        StatePumpLowPressureWait(StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl) :
         State(statusHandler, pressureSensor, relayControl){};
 
         SystemState tick() override;
-        virtual void enter() override;
+        virtual void enterState() override;
     private:
-        int _pumpOnTime = 0;
 };
 
 

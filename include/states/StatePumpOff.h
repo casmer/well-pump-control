@@ -11,7 +11,7 @@ class StatePumpOff : public State
         State(statusHandler, pressureSensor, relayControl){};
 
         SystemState tick() override;
-        virtual void enter() override;
+        virtual void enterState() override;
     private:
         int _lowPressureWait = 0;
     

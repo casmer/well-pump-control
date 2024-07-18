@@ -11,9 +11,8 @@ class StatePumpLowError : public State
         State(statusHandler, pressureSensor, relayControl){};
 
         SystemState tick() override;
-        virtual void enter() override;
+        virtual void enterState() override;
     private:
-        int _lowPressureErrorWait = 0;
         
 };
 

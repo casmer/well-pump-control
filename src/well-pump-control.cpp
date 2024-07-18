@@ -1,8 +1,10 @@
 
 
 #include <ArduinoBLE.h>
-
+#include <Arduino.h>
 #include <loopTimer.h>
+#include "digital_pin_defs.h"
+#include <pins_arduino.h>
 // install the loopTimer library from https://www.forward.com.au/pfod/ArduinoProgramming/RealTimeArduino/TimingDelaysInArduino.html
 // loopTimer.h also needs the millisDelay library installed from https://www.forward.com.au/pfod/ArduinoProgramming/TimingDelaysInArduino.html
 #include <BufferedOutput.h>
@@ -12,10 +14,8 @@
 #include "RelayControl.h"
 #include "StatusHandler.h"
 #include "PressureSensor.h"
-#include "states/State.h"
-#include "states/StatePumpOff.h"
-#include "states/StatePumpOn.h"
-#include "states/StatePumpLowError.h"
+#include "states/StateMachine.h"
+
 /*
 
 */
@@ -62,13 +62,8 @@ millisDelay statusUpdateDelay;
 RelayControl relayControl;
 StatusHandler statusHandler;
 PressureSensor pressureSensor;
-//state variables
-State states[3]
-  {
-    StatePumpOff(statusHandler, pressureSensor, relayControl), 
-    StatePumpOn(statusHandler, pressureSensor, relayControl), 
-    StatePumpLowError(statusHandler, pressureSensor, relayControl) 
-  };
+//state machine
+StateMachine stateMachine(statusHandler, pressureSensor, relayControl);
 
 bool ledOn = false;
 int pumpOnTime = 0;
@@ -113,6 +108,7 @@ void blinkLed()
   if (ledDelay.justFinished()) 
   {
     ledDelay.repeat(); 
+
     ledOn = !ledOn;    
     digitalWrite(blinkPin, ledOn ? HIGH : LOW); 
   } 
@@ -154,76 +150,13 @@ void statusUpdate()
 
 void processPressure()
 {
-  pressureSensor.readPressure();
-  statusHandler.updatePressure(pressureSensor.getMeasuredPressure());
-  if (pressureSensor.getMeasuredPressure() >= setPressure)
+  if (pressureCheckDelay.justFinished()) 
   {
-    relayControl.RelayOff();
-    pumpOnTime=0;
-    pumpOnUnderPressureTime=0;
-    minPressureCounter=0;
-  } else if (pumpOnUnderPressureTime >= maxRunTime)
-  {
-    relayControl.RelayOff();
-  } else
-  if (pressureSensor.getMeasuredPressure() < minPressure && pumpOnTime <= 0)
-  {
-    if (minPressureCounter >=minPressureDebounceCount)
-    {
-      pumpOnTime=1;
-      pumpOnUnderPressureTime=1;
-      minPressureCounter=0;
-      relayControl.RelayOn();
-    } else {
-      statusHandler.showMessage("Low Press wait.");
-      minPressureCounter++;
-    } 
-  } 
-  else
-  {
-    if (relayControl.getRelayIsOn()==false)
-    {
-      statusHandler.showMessage("Pump Off");
-    }
-  }
-  if (pressureSensor.getMeasuredPressure() < setPressure && pumpOnTime > 0)
-  {   
-    pumpOnTime++;
-    if (pressureSensor.getMeasuredPressure() < minPressure)
-    {
-      pumpOnUnderPressureTime++;
-    } 
-    else
-    {
-      pumpOnUnderPressureTime=0;
-    }
-  }
-  if (pumpOnTime>0)
-  {
-    if (relayControl.getRelayIsOn()==false)
-    {
-      if (pumpCooldownCheckTime >= pumpCooldownTime)
-      {
-        pumpOnTime = 0;
-        pumpCooldownCheckTime=0;
-        pumpOnUnderPressureTime=0;
-        minPressureCounter=0;
-      }
-      else 
-      {
-        pumpCooldownCheckTime++;
-        statusHandler.showMessage("Pump Cool");
-        statusHandler.printTime(1,11,pumpCooldownCheckTime);
-      }
-    } 
-    else
-    {
-      statusHandler.showMessage("RT-00:00");
-      statusHandler.printTime(0,11,pumpOnTime);
+    pressureCheckDelay.repeat(); 
 
-      pumpCooldownCheckTime=0; 
-    }
-  }
+    
+  } 
+  
   
   
   
