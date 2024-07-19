@@ -3,7 +3,7 @@
 #ifndef PRESSURESENSOR_H
 #define PRESSURESENSOR_H
 #if UNIT_TEST
-#include "mocks/ADS1015_WE.h"
+#include<ADS1015_WE.h> 
 #else
 #include<ADS1015_WE.h> 
 #endif

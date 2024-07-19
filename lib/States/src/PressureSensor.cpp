@@ -4,7 +4,7 @@
 
 //#define PRINT_PRESSURE
 
-#include "PressureSensor.h"
+#include <PressureSensor.h>
 
 #include<ADS1015_WE.h> 
 #include<Wire.h>

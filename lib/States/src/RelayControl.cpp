@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include "Arduino.h"
 
-#include "RelayControl.h"
+#include <RelayControl.h>
 
 void RelayControl::RelayOn()
 {

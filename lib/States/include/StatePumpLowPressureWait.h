@@ -1,7 +1,7 @@
 
 #ifndef STATE_PUMP_LOW_PRESSURE_WAIT_H
 #define STATE_PUMP_LOW_PRESSURE_WAIT_H
-#include "State.h"
+#include <State.h>
 
 class StatePumpLowPressureWait : public State
 {

@@ -1,0 +1,36 @@
+{
+  "name": "States",
+  "keywords": "states",
+  "description": "sates",
+  "license": "MIT",
+  "version": "0.0.1",
+  "frameworks": "*",
+  "platforms": [
+    "espressif32",
+    "espressif8266",
+    "nano_33_iot",
+    "native"
+  ],
+  "export": {
+    "include": [
+      "include"
+      
+    ]
+  },
+  "dependencies" :
+  {
+    "ollewald/ADS1115_WE":"^1.5.1",
+    "marcoschwartz/LiquidCrystal_I2C":"^1.1.4",
+    "arduino-libraries/ArduinoBLE":"^1.3.6",
+    "powerbroker2/SafeString":"^4.1.33",
+    "robtillaart/MAX6675":"^0.3.2"
+  },
+  "build": {
+    "flags": [
+      "-Igooglemock",
+      "-Igooglemock/include",
+      "-Igoogletest",
+      "-Igoogletest/include"
+    ]
+  }
+}
