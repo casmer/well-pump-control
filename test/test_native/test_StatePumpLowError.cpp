@@ -6,15 +6,6 @@
 
 using namespace fakeit;
 
-void setUp(void)
-{
-     ArduinoFakeReset();
-}
-
-void tearDown(void) {
-    // clean stuff up here
-}
-
 void test_pressure_recovery(void)
 {
 
@@ -99,37 +90,3 @@ void test_pressure_no_recovery(void)
     Verify(Method(statusHandler, showMessage).Using(MessageId::PRESSURE_RECOVERY)).Exactly(0_Times);
     TEST_ASSERT_EQUAL(SystemState::PUMP_LOW_PRESSURE_ERROR, nextState);
 }
-
-void RUN_UNITY_TESTS() {
-    UNITY_BEGIN();
-    RUN_TEST(test_pressure_recovery);
-    RUN_TEST(test_pressure_no_recovery);
-    UNITY_END();
-}
-
-#ifdef ARDUINO
-
-#include <Arduino.h>
-void setup() {
-    // NOTE!!! Wait for >2 secs
-    // if board doesn't support software reset via Serial.DTR/RTS
-    delay(2000);
-
-    RUN_UNITY_TESTS();
-}
-
-void loop() {
-    digitalWrite(13, HIGH);
-    delay(100);
-    digitalWrite(13, LOW);
-    delay(500);
-}
-
-#else
-
-int main(int argc, char **argv) {
-    RUN_UNITY_TESTS();
-    return 0;
-}
-
-#endif
