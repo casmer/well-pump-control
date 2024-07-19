@@ -16,7 +16,7 @@ SystemState StatePumpLowError::tick()
     }
     else
     {
-        _statusHandler.showMessage(MessageId::PRESSURE_RECOVERY);
+        _statusHandler.showMessage(MessageId::LOW_PRESSURE_ERROR);
     }
     //else nothing needs to change
     
@@ -25,6 +25,6 @@ SystemState StatePumpLowError::tick()
 
 void StatePumpLowError::enterState() 
 {
-    _statusHandler.showMessage(MessageId::PRESSURE_RECOVERY);
+    _statusHandler.showMessage(MessageId::LOW_PRESSURE_ERROR);
 };
 
