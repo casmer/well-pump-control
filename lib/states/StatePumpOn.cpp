@@ -1,5 +1,5 @@
-#include "states/StatePumpOn.h"
-#include "PumpControlConfig.h"
+#include <StatePumpOn.h>
+#include <PumpControlConfig.h>
 
 SystemState StatePumpOn::tick()
 {

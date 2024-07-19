@@ -2,8 +2,8 @@
 #define SYSTEM_STATE_H
 
 #include <PressureSensor.h>
-#include "RelayControl.h"
-#include "StatusHandler.h"
+#include <RelayControl.h>
+#include <StatusHandler.h>
 
 enum class SystemState : int
 {

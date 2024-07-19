@@ -1,6 +1,6 @@
 
-#ifndef STATE_PUMP_ON_H
-#define STATE_PUMP_ON_H
+#ifndef STATE_PUMP_LOW_PRESSURE_WAIT_H
+#define STATE_PUMP_LOW_PRESSURE_WAIT_H
 #include "State.h"
 
 class StatePumpLowPressureWait : public State
@@ -17,4 +17,4 @@ class StatePumpLowPressureWait : public State
 
 
 
-#endif // STATE_PUMP_ON_H
+#endif // STATE_PUMP_LOW_PRESSURE_WAIT_H

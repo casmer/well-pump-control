@@ -6,6 +6,15 @@
 
 #include "PressureSensor.h"
 
+#include<ADS1015_WE.h> 
+#include<Wire.h>
+#define I2C_ADDRESS 0x48
+
+
+PressureSensor::PressureSensor() :
+   _adc{ ADS1115_WE(I2C_ADDRESS)}
+    {};
+
 void PressureSensor::setup()
 {
 

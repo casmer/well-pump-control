@@ -2,25 +2,28 @@
 
 #ifndef PRESSURESENSOR_H
 #define PRESSURESENSOR_H
-
+#if UNIT_TEST
+#include "mocks/ADS1015_WE.h"
+#else
 #include<ADS1015_WE.h> 
+#endif
 #include<Wire.h>
 #define I2C_ADDRESS 0x48
 
-
+class ADS1115_WE;
 
 class PressureSensor
 {
 public:
-    PressureSensor() : _measuredPressure(-1) {};
+    PressureSensor();
 
-    void setup();
-    void readPressure();
-    int getMeasuredPressure() { return _measuredPressure; }
+    virtual void setup();
+    virtual void readPressure();
+    virtual int getMeasuredPressure() { return _measuredPressure; }
 
 private:
     float map(float x, float in_min, float in_max, float out_min, float out_max);
-    ADS1115_WE _adc = ADS1115_WE(I2C_ADDRESS);
+    ADS1115_WE _adc;
 
 
 

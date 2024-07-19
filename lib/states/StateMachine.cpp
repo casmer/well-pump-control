@@ -2,11 +2,12 @@
 
 
 
-#include "states/StateMachine.h"
+#include <StateMachine.h>
 
 StateMachine::StateMachine(StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl) :
-          states{
+          _states{
     StatePumpOff(statusHandler, pressureSensor, relayControl), 
+    StatePumpLowPressureWait(statusHandler, pressureSensor, relayControl), 
     StatePumpOn(statusHandler, pressureSensor, relayControl), 
     StatePumpLowError(statusHandler, pressureSensor, relayControl)
   },

@@ -6,10 +6,10 @@ class RelayControl
     public:
         RelayControl() {};
 
-        void setRelayPin(int relayPin);
-        void RelayOn();
-        void RelayOff();
-        bool getRelayIsOn() { return _relayIsOn; };
+        virtual void setRelayPin(int relayPin);
+        virtual void RelayOn();
+        virtual void RelayOff();
+        virtual bool getRelayIsOn() { return _relayIsOn; };
     private:
         bool _relayIsOn = false;
         int _relayPin = 0;

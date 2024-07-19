@@ -13,7 +13,6 @@ class StatePumpOff : public State
         SystemState tick() override;
         virtual void enterState() override;
     private:
-        int _lowPressureWait = 0;
     
 };
 

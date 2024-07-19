@@ -1,5 +1,5 @@
-#include "states/StatePumpLowError.h"
-#include "PumpControlConfig.h"
+#include <StatePumpLowError.h>
+#include <PumpControlConfig.h>
 
 SystemState StatePumpLowError::tick()
 {
@@ -8,16 +8,15 @@ SystemState StatePumpLowError::tick()
     
     if (_pressureSensor.getMeasuredPressure() > CONFIG().getLowPressureError())
     {
-        _statusHandler.showMessage("Pressure Recovery");
+        _statusHandler.showMessage(MessageId::PRESSURE_RECOVERY);
         if (get_state_time_ms() > CONFIG().getLowPressureDelay_ms())
         {
-            
             nextState= SystemState::PUMP_OFF;
         }
     }
     else
     {
-        _statusHandler.showMessage("Low Pressure Error");
+        _statusHandler.showMessage(MessageId::PRESSURE_RECOVERY);
     }
     //else nothing needs to change
     
@@ -26,6 +25,6 @@ SystemState StatePumpLowError::tick()
 
 void StatePumpLowError::enterState() 
 {
-    _statusHandler.showMessage("Low Pressure Error");
+    _statusHandler.showMessage(MessageId::PRESSURE_RECOVERY);
 };
 

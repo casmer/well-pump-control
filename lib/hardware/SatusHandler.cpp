@@ -1,4 +1,3 @@
-
 #include <inttypes.h>
 #include "Arduino.h"
 
@@ -50,10 +49,31 @@ void StatusHandler::printTime(int line, int startPos, int timeInS)
       lcd.print(sec);
 }
 
-void StatusHandler::showMessage(const char* message)
+
+constexpr size_t my_str_len(const char* str) {
+  return *str ? 1 + my_str_len(str + 1) : 0;
+};
+#define MESSAGE_HANDLER(messageId, message_str) \
+  case messageId: \
+      static_assert(my_str_len(message_str) <= 17);  \
+      lcd.print(message_str); \
+      break;
+
+void StatusHandler::showMessage(MessageId messageId)
 {
     lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
-    static char message_str[17];
-    sprintf(message_str, "%16s", message);
-    lcd.print(message_str);
+    switch (messageId)
+    { //                                             ----------------
+      MESSAGE_HANDLER(MessageId::NO_MESSAGE,        "                ");
+      MESSAGE_HANDLER(MessageId::LOW_PRESSURE_ERROR,"Low Pressure Err");
+      MESSAGE_HANDLER(MessageId::PRESSURE_RECOVERY, "Pressure Recover");
+      MESSAGE_HANDLER(MessageId::LOW_PRESSURE_WAIT, "      Waiting...");
+      MESSAGE_HANDLER(MessageId::PUMP_OFF,          "        Pump Off");
+      MESSAGE_HANDLER(MessageId::PUMP_ON,           "         Pump On");
+      
+    default:
+      lcd.print(" INVALID MESSAGE");
+      break;
+    }
+
 }

@@ -1,5 +1,5 @@
-#include "states/StatePumpLowPressureWait.h"
-#include "PumpControlConfig.h"
+#include <StatePumpLowPressureWait.h>
+#include <PumpControlConfig.h>
 
 SystemState StatePumpLowPressureWait::tick()
 {

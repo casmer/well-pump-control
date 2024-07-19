@@ -14,7 +14,7 @@
 #include "RelayControl.h"
 #include "StatusHandler.h"
 #include "PressureSensor.h"
-#include "states/StateMachine.h"
+#include <StateMachine.h>
 
 /*
 
