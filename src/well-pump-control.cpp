@@ -87,7 +87,7 @@ void setup() {
   pinMode(relayPin, OUTPUT);
   pinMode(blinkPin, OUTPUT);
   pinMode(pressureSensorPin, INPUT);
-  relayControl.setRelayPin(relayPin);
+  relayControl.setDioPin(relayPin);
   pressureSensor.setup();\
   Serial.begin(74880);
   

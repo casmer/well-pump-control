@@ -15,10 +15,10 @@ void test_pressure_recovery(void)
     When(Method(pressureSensor, readPressure)).AlwaysReturn();
     When(Method(pressureSensor, getMeasuredPressure)).Return(60, 30, 10, 20);
     Mock<RelayControl> relayControl;
-    When(Method(relayControl, RelayOn)).AlwaysReturn();
-    When(Method(relayControl, RelayOff)).AlwaysReturn();
-    When(Method(relayControl, setRelayPin)).AlwaysReturn();
-    When(Method(relayControl, getRelayIsOn)).Return(false);
+    When(Method(relayControl, On)).AlwaysReturn();
+    When(Method(relayControl, Off)).AlwaysReturn();
+    When(Method(relayControl, setDioPin)).AlwaysReturn();
+    When(Method(relayControl, isOn)).Return(false);
 
     Mock<StatusHandler> statusHandler;
 
@@ -36,13 +36,13 @@ void test_pressure_recovery(void)
     
     Verify(Method(statusHandler, showMessage).Using(MessageId::LOW_PRESSURE_ERROR)).Exactly(1_Times);
     Verify(Method(statusHandler, showMessage).Using(MessageId::PRESSURE_RECOVERY)).Exactly(1_Times);
-    TEST_ASSERT_EQUAL(SystemState::PUMP_OFF, nextState);
+    TEST_ASSERT_EQ_ENH(SystemState::PUMP_OFF, nextState);
 
     /*
     MyService service(clientMock);
 
     String response = service.request("myserver.com");
-    TEST_ASSERT_EQUAL(3, response.length());
+    TEST_ASSERT_EQ_ENH(3, response.length());
     TEST_ASSERT_TRUE(response.equals("200"));
 
 
@@ -59,10 +59,10 @@ void test_pressure_no_recovery(void)
     When(Method(pressureSensor, readPressure)).AlwaysReturn();
     When(Method(pressureSensor, getMeasuredPressure)).Return(5, 5);
     Mock<RelayControl> relayControl;
-    When(Method(relayControl, RelayOn)).AlwaysReturn();
-    When(Method(relayControl, RelayOff)).AlwaysReturn();
-    When(Method(relayControl, setRelayPin)).AlwaysReturn();
-    When(Method(relayControl, getRelayIsOn)).Return(false);
+    When(Method(relayControl, On)).AlwaysReturn();
+    When(Method(relayControl, Off)).AlwaysReturn();
+    When(Method(relayControl, setDioPin)).AlwaysReturn();
+    When(Method(relayControl, isOn)).Return(false);
 
     Mock<StatusHandler> statusHandler;
 
@@ -82,11 +82,11 @@ void test_pressure_no_recovery(void)
     
     Verify(Method(statusHandler, showMessage).Using(MessageId::LOW_PRESSURE_ERROR)).Exactly(2_Times);
     Verify(Method(statusHandler, showMessage).Using(MessageId::PRESSURE_RECOVERY)).Exactly(0_Times);
-    TEST_ASSERT_EQUAL(SystemState::PUMP_LOW_PRESSURE_ERROR, nextState);
+    TEST_ASSERT_EQ_ENH(SystemState::PUMP_LOW_PRESSURE_ERROR, nextState);
     nextState= uut.tick();
     Verify(Method(ArduinoFake(), millis)).Exactly(1);
     
     Verify(Method(statusHandler, showMessage).Using(MessageId::LOW_PRESSURE_ERROR)).Exactly(3_Times);
     Verify(Method(statusHandler, showMessage).Using(MessageId::PRESSURE_RECOVERY)).Exactly(0_Times);
-    TEST_ASSERT_EQUAL(SystemState::PUMP_LOW_PRESSURE_ERROR, nextState);
+    TEST_ASSERT_EQ_ENH(SystemState::PUMP_LOW_PRESSURE_ERROR, nextState);
 }

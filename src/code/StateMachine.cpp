@@ -13,7 +13,7 @@ StateMachine::StateMachine(StatusHandler& statusHandler, PressureSensor& pressur
   },
   _statusHandler(statusHandler),
   _pressureSensor(pressureSensor),
-  _relayControl(relayControl),
+  _pumpControl(relayControl),
  _currentState{SystemState::PUMP_OFF}
  
 {};

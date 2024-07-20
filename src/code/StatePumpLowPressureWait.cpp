@@ -29,5 +29,5 @@ SystemState StatePumpLowPressureWait::tick()
 
 void StatePumpLowPressureWait::enterState() 
 {
-    _relayControl.RelayOff();
+    _pumpControl.Off();
 };

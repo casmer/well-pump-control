@@ -19,7 +19,7 @@ class State
         State( StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl):
         _statusHandler(statusHandler),
         _pressureSensor(pressureSensor),
-        _relayControl(relayControl),
+        _pumpControl(relayControl),
         _state_entry_time(0)
          {};
         virtual SystemState tick() { return SystemState::PUMP_OFF; };
@@ -27,12 +27,15 @@ class State
         virtual void enterState() {};
         unsigned long get_state_time_ms();
 
+        unsigned long get_last_state_time_ms();
+
     protected:
     StatusHandler&  _statusHandler;
     PressureSensor& _pressureSensor;
-    RelayControl&  _relayControl;
+    RelayControl&  _pumpControl;
 
     unsigned long _state_entry_time;
+    unsigned long _last_state_time;
 };
 
 #endif //SYSTEM_STATE_H

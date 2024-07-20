@@ -4,8 +4,9 @@
 void test_pressure_recovery(void);
 void test_pressure_no_recovery(void);
 void test_pump_off_pressure_low(void);
-void test_pump_off_presure_high(void);
-
+void test_pump_off_pressure_high(void);
+void test_pump_on_pressure_low(void);
+void test_pump_on_pressure_high(void);
 
 void setUp(void)
 {
@@ -23,7 +24,10 @@ void RUN_UNITY_TESTS() {
     RUN_TEST(test_pressure_no_recovery);
 
     RUN_TEST(test_pump_off_pressure_low);
-    RUN_TEST(test_pump_off_presure_high);
+    RUN_TEST(test_pump_off_pressure_high);
+
+    RUN_TEST(test_pump_on_pressure_low);
+    RUN_TEST(test_pump_on_pressure_high);
 
     UNITY_END();
 }

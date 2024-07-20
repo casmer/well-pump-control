@@ -4,16 +4,14 @@
 SystemState StatePumpOn::tick()
 {
     SystemState nextState = SystemState::PUMP_ON;
-
-    if (_pressureSensor.getMeasuredPressure() >= CONFIG().getSetPressureHigh())
+    int measuredPressure = _pressureSensor.getMeasuredPressure();
+    if (measuredPressure >= CONFIG().getSetPressureHigh())
     {
-        _relayControl.RelayOff();
         nextState= SystemState::PUMP_OFF;
     }
-    else if ((_pressureSensor.getMeasuredPressure() <= CONFIG().getLowPressureError())
+    else if ((measuredPressure <= CONFIG().getLowPressureError())
          && (get_state_time_ms() >= CONFIG().getMaxLowPressureRunTime_ms()))
     {
-        _relayControl.RelayOff();
         nextState = SystemState::PUMP_LOW_PRESSURE_ERROR;
     }
     //TODO: add temperature checks to shut off on overheating conditions
@@ -24,5 +22,6 @@ SystemState StatePumpOn::tick()
 
 void StatePumpOn::enterState() 
 {
-    _relayControl.RelayOn();
+    _statusHandler.showMessage(MessageId::PUMP_ON);
+    _pumpControl.On();
 };

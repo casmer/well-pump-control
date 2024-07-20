@@ -5,13 +5,13 @@
 
 #include <RelayControl.h>
 
-void RelayControl::RelayOn()
+void RelayControl::On()
 {
   _relayIsOn=true;
   digitalWrite(_relayPin, HIGH);   // relay on
 }
 
-void RelayControl::RelayOff()
+void RelayControl::Off()
 {
   if (_relayIsOn)
   {
@@ -22,7 +22,7 @@ void RelayControl::RelayOff()
   digitalWrite(_relayPin, LOW);   // relay off
 }
 
-void RelayControl::setRelayPin(int relayPin)
+void RelayControl::setDioPin(int relayPin)
 {
     _relayPin = relayPin;
 }

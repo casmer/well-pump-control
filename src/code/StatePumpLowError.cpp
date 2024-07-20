@@ -21,6 +21,7 @@ SystemState StatePumpLowError::tick()
 
 void StatePumpLowError::enterState() 
 {
+    _pumpControl.Off();
     _statusHandler.showMessage(MessageId::LOW_PRESSURE_ERROR);
 };
 

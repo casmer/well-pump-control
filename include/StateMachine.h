@@ -26,7 +26,7 @@ private:
   // interface handlers
   StatusHandler& _statusHandler;
   PressureSensor& _pressureSensor;
-  RelayControl& _relayControl;
+  RelayControl& _pumpControl;
   SystemState _currentState;
 };
 
