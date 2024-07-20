@@ -1,12 +1,14 @@
 #include <ArduinoFake.h>
 #include <unity.h>
 
-void test_pressure_recovery(void);
-void test_pressure_no_recovery(void);
-void test_pump_off_pressure_low(void);
-void test_pump_off_pressure_high(void);
-void test_pump_on_pressure_low(void);
-void test_pump_on_pressure_high(void);
+void test_StatePumpLowError_pressure_recovery(void);
+void test_StatePumpLowError_no_recovery(void);
+void StatePumpOff_pressure_low(void);
+void StatePumpOff_pressure_high(void);
+void test_StatePumpOn_pressure_low(void);
+void test_StatePumpOn_pressure_high(void);
+void test_StatePumpLowPressureWait_pressure_low(void);
+void test_StatePumpLowPressureWait_pressure_high(void);
 
 void setUp(void)
 {
@@ -20,15 +22,17 @@ void tearDown(void) {
 
 void RUN_UNITY_TESTS() {
     UNITY_BEGIN();
-    RUN_TEST(test_pressure_recovery);
-    RUN_TEST(test_pressure_no_recovery);
+    RUN_TEST(test_StatePumpLowError_pressure_recovery);
+    RUN_TEST(test_StatePumpLowError_no_recovery);
 
-    RUN_TEST(test_pump_off_pressure_low);
-    RUN_TEST(test_pump_off_pressure_high);
+    RUN_TEST(StatePumpOff_pressure_low);
+    RUN_TEST(StatePumpOff_pressure_high);
 
-    RUN_TEST(test_pump_on_pressure_low);
-    RUN_TEST(test_pump_on_pressure_high);
+    RUN_TEST(test_StatePumpOn_pressure_low);
+    RUN_TEST(test_StatePumpOn_pressure_high);
 
+    RUN_TEST(test_StatePumpLowPressureWait_pressure_low);
+    RUN_TEST(test_StatePumpLowPressureWait_pressure_high);
     UNITY_END();
 }
 

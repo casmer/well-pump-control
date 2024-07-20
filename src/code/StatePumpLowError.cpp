@@ -4,8 +4,8 @@
 SystemState StatePumpLowError::tick()
 {
     SystemState nextState = SystemState::PUMP_LOW_PRESSURE_ERROR;
-    
-    if (_pressureSensor.getMeasuredPressure() > CONFIG().getLowPressureError())
+    int measuredPressure = _pressureSensor.getMeasuredPressure();
+    if (measuredPressure > CONFIG().getLowPressureError())
     {
         _statusHandler.showMessage(MessageId::PRESSURE_RECOVERY);
         nextState= SystemState::PUMP_OFF;    

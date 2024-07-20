@@ -6,7 +6,7 @@
 
 using namespace fakeit;
 
-void test_pressure_recovery(void)
+void test_StatePumpLowError_pressure_recovery(void)
 {
 
     When(Method(ArduinoFake(), millis)).Return(2003);
@@ -50,7 +50,7 @@ void test_pressure_recovery(void)
 }
 
 
-void test_pressure_no_recovery(void)
+void test_StatePumpLowError_no_recovery(void)
 {
 
     When(Method(ArduinoFake(), millis)).Return(2003,MINUTES_ms(20));

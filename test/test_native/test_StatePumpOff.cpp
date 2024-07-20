@@ -7,7 +7,7 @@
 
 using namespace fakeit;
 
-void test_pump_off_pressure_low(void)
+void StatePumpOff_pressure_low(void)
 {
 
     When(Method(ArduinoFake(), millis)).Return(2003, 4000);
@@ -45,7 +45,7 @@ void test_pump_off_pressure_low(void)
 }
 
 
-void test_pump_off_pressure_high(void)
+void StatePumpOff_pressure_high(void)
 {
 
     When(Method(ArduinoFake(), millis)).Return(2003,MINUTES_ms(20));

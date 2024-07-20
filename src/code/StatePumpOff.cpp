@@ -4,7 +4,9 @@
 SystemState StatePumpOff::tick()
 {
     SystemState nextState = SystemState::PUMP_OFF;
-    if (_pressureSensor.getMeasuredPressure() <= CONFIG().getSetPressureLow())
+    int measuredPressure = _pressureSensor.getMeasuredPressure();
+
+    if (measuredPressure <= CONFIG().getSetPressureLow())
     {
         nextState= SystemState::PUMP_LOW_PRESSURE_WAIT;
     }
