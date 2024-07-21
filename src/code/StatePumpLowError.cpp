@@ -1,6 +1,7 @@
 #include <StatePumpLowError.h>
 #include <PumpControlConfig.h>
 
+#define DEBUG_PRINT
 SystemState StatePumpLowError::tick()
 {
     SystemState nextState = SystemState::PUMP_LOW_PRESSURE_ERROR;
@@ -21,6 +22,9 @@ SystemState StatePumpLowError::tick()
 
 void StatePumpLowError::enterState() 
 {
+    #ifdef DEBUG_PRINT
+        //Serial.print(5,10);
+    #endif
     _pumpControl.Off();
     _statusHandler.showMessage(MessageId::LOW_PRESSURE_ERROR);
 };

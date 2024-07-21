@@ -3,7 +3,10 @@
 #ifndef PUMP_CONTROL_CONFIG
 #define PUMP_CONTROL_CONFIG
 
-
+/// @brief returns the number of milliseconds in the provided value for minutes
+#define MINUTES_ms(minutes) (minutes * 1000 * 60)
+/// @brief returns the number of milliseconds in the provided value for seconds
+#define SECONDS_ms(seconds) (seconds * 1000)
 class PumpControlConfig
 {
 
@@ -27,12 +30,10 @@ class PumpControlConfig
 
          int _setPressureHigh = 45;
         int _setPressureLow = 30;
-        unsigned int _lowPressureDelay_ms = 3000;
+        unsigned int _lowPressureDelay_ms = SECONDS_ms(3);
 
         int _lowPressureError = 10;
-        unsigned int _maxLowPressureRunTime_ms = 60;
-
-
+        unsigned int _maxLowPressureRunTime_ms = SECONDS_ms(10);
 };
 
 #define CONFIG() PumpControlConfig::pumpConifg()

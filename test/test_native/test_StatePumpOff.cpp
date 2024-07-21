@@ -26,7 +26,7 @@ void StatePumpOff_pressure_low(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    When(Method(statusHandler, printTime)).AlwaysReturn();
+    //When(Method(statusHandler, printTime)).AlwaysReturn();
 
     StatePumpOff uut(statusHandler.get(), pressureSensor.get(), relayControl.get());
      
@@ -64,7 +64,7 @@ void StatePumpOff_pressure_high(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    When(Method(statusHandler, printTime)).AlwaysReturn();
+    //When(Method(statusHandler, printTime)).AlwaysReturn();
 
 
     StatePumpOff uut(statusHandler.get(), pressureSensor.get(), relayControl.get());

@@ -21,13 +21,21 @@ public:
   /// @brief setup the state machine. (should be called from mcu setup)
   void setup();
 private:
+
+  StatePumpOff _statePumpOff;
+  StatePumpLowPressureWait  _statePumpLowPressureWait;
+  StatePumpOn _statePumpOn;
+  StatePumpLowError _statePumpLowError;
+
   //state variables
-  State _states[4];
+  State* _states[4];
   // interface handlers
   StatusHandler& _statusHandler;
   PressureSensor& _pressureSensor;
   RelayControl& _pumpControl;
   SystemState _currentState;
+  State& getCurrentState() { return *_states[static_cast<int>(_currentState)]; };
+
 };
 
 #endif //STATES_STATE_MACHINE_H

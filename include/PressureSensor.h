@@ -18,7 +18,8 @@ public:
     virtual int getMeasuredPressure() { return _measuredPressure; }
 
 private:
-    float map(float x, float in_min, float in_max, float out_min, float out_max);
+    float map(float& x, float& in_min, float& in_max, float& out_min, float& out_max);
+    const float clamp(const float& val, const float& lo, const float& hi);
     ADS1115_WE _adc;
 
 

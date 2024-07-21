@@ -7,6 +7,10 @@
 
 void RelayControl::On()
 {
+  if (!_relayIsOn)
+  {
+    Serial.println("Relay On");
+  }
   _relayIsOn=true;
   digitalWrite(_relayPin, HIGH);   // relay on
 }

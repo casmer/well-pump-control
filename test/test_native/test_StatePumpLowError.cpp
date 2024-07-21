@@ -1,13 +1,35 @@
 #include <ArduinoFake.h>
 #include <StatePumpLowError.h>
+#include <PumpControlConfig.h>
 #include <mocks/TestHelpers.h>
 #include <unity.h>
 
+#include <cstdio>
 
 using namespace fakeit;
 
 void test_StatePumpLowError_pressure_recovery(void)
 {
+    When(OverloadedMethod(ArduinoFake(Serial), print, size_t(char))).AlwaysDo([](char c)->size_t{
+        std::cout << c ;
+        return 1;
+    });
+
+    When(OverloadedMethod(ArduinoFake(Serial), print, size_t(int, int))).AlwaysDo([](int num, int rad)->size_t{
+        std::cout << num ;
+        return 1;
+    });
+    When(OverloadedMethod(ArduinoFake(Serial), print, size_t(double, int))).AlwaysDo([](double num, int rad)->size_t{
+        std::cout << num ;
+        return 1;
+    });
+    When(OverloadedMethod(ArduinoFake(Serial), print, size_t(long int, int))).AlwaysDo([](long int num, int rad)->size_t{
+        std::cout << num ;
+        return 1;
+    });
+
+
+// When(Method(mock,foo)).AlwaysDo([](int a)->int{ ... });
 
     When(Method(ArduinoFake(), millis)).Return(2003);
     Mock<PressureSensor> pressureSensor;
@@ -25,7 +47,7 @@ void test_StatePumpLowError_pressure_recovery(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    When(Method(statusHandler, printTime)).AlwaysReturn();
+    //When(Method(statusHandler, printTime)).AlwaysReturn();
 
 
     StatePumpLowError uut(statusHandler.get(), pressureSensor.get(), relayControl.get());
@@ -69,7 +91,7 @@ void test_StatePumpLowError_no_recovery(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    When(Method(statusHandler, printTime)).AlwaysReturn();
+    //When(Method(statusHandler, printTime)).AlwaysReturn();
 
 
      StatePumpLowError uut(statusHandler.get(), pressureSensor.get(), relayControl.get());

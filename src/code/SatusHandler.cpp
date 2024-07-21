@@ -17,18 +17,59 @@ void StatusHandler::setup()
     lcd.setCursor(0,1);   //Move cursor to character 2 on line 1
     lcd.print("                ");
 }
+ 
+void StatusHandler::updateTime(int timeInMs)
+{
+  _currentTime_ms = timeInMs;
+}
+void StatusHandler::showMessage(MessageId messageId)
+{
+  _messageId = messageId;
+}
 
 void StatusHandler::updatePressure(int measuredPressure)
 {
-    static int lastPressure=-1;
-    if (lastPressure!=measuredPressure)
+  _measuredPressure = measuredPressure;
+}
+
+void StatusHandler::updatePumpState(bool running)
+{
+  _pumpRunning = running;
+}
+
+void StatusHandler::printPressure()
+{
+    if (_lastPressure!=_measuredPressure)
     {
       lcd.setCursor(0,0);   //Move cursor to character 1 on line 1
       lcd.print("P:    ");
       lcd.setCursor(2,0);   //Move cursor to character 3 on line 1
-      lcd.print(measuredPressure);
-      lastPressure=measuredPressure;
+      lcd.print(_measuredPressure);
+      
+      _lastPressure=_measuredPressure;
     }
+}
+
+void StatusHandler::printClock()
+{
+  int currentTime_s = _currentTime_ms/1000;
+  if (_lastTime_s != currentTime_s)
+  {
+    _lastTime_s = currentTime_s;
+    //print time starting at character 12 on line 1
+    printTime(0,11,currentTime_s);
+  }
+
+}
+
+void StatusHandler::printPumpState()
+{
+  if (_lastPumpRunning!=_pumpRunning)
+  {
+    _lastPumpRunning=_pumpRunning;
+    lcd.setCursor(9,0);   //Move cursor to character 10 on line 1
+    lcd.print((_pumpRunning ? "+":"-"));
+  }
 }
 
 void StatusHandler::printTime(int line, int startPos, int timeInS)
@@ -59,10 +100,13 @@ constexpr size_t my_str_len(const char* str) {
       lcd.print(message_str); \
       break;
 
-void StatusHandler::showMessage(MessageId messageId)
+
+void StatusHandler::printMessage()
 {
+  if (_lastMessageId != _messageId)
+  {
     lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
-    switch (messageId)
+    switch (_messageId)
     { //                                             ----------------
       MESSAGE_HANDLER(MessageId::NO_MESSAGE,        "                ");
       MESSAGE_HANDLER(MessageId::LOW_PRESSURE_ERROR,"Low Pressure Err");
@@ -75,5 +119,14 @@ void StatusHandler::showMessage(MessageId messageId)
       lcd.print(" INVALID MESSAGE");
       break;
     }
+    _lastMessageId = _messageId;
+  }
+}
 
+void StatusHandler::printAll()
+{
+  printPressure();
+  printPumpState();
+  printClock();
+  printMessage();
 }
