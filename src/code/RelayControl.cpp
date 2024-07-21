@@ -2,7 +2,6 @@
 
 #include <inttypes.h>
 #include "Arduino.h"
-
 #include <RelayControl.h>
 
 void RelayControl::On()

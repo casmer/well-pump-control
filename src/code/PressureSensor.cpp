@@ -1,8 +1,6 @@
 #include "DebugEnables.h"
-
 #include <inttypes.h>
 
-#define PRINT_PRESSURE
 
 #include <PressureSensor.h>
 
@@ -10,6 +8,7 @@
 
 #define I2C_ADDRESS 0x48
 
+#define PRINT_PRESSURE
 
 PressureSensor::PressureSensor() :
    _adc{ ADS1115_WE(I2C_ADDRESS)}

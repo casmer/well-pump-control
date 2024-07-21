@@ -25,7 +25,6 @@ void test_StatePumpLowPressureWait_pressure_high(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    //When(Method(statusHandler, printTime)).AlwaysReturn();
 
     StatePumpLowPressureWait uut(statusHandler.get(), pressureSensor.get(), relayControl.get());
      
@@ -66,8 +65,6 @@ void test_StatePumpLowPressureWait_pressure_low(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    //When(Method(statusHandler, printTime)).AlwaysReturn();
-
     
     StatePumpLowPressureWait uut(statusHandler.get(), pressureSensor.get(), relayControl.get());
     int expect_millis_call_count=1;

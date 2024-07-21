@@ -9,7 +9,6 @@ using namespace fakeit;
 
 void StatePumpOff_pressure_low(void)
 {
-
     When(Method(ArduinoFake(), millis)).Return(2003, 4000);
     Mock<PressureSensor> pressureSensor;
     When(Method(pressureSensor, setup)).AlwaysReturn();
@@ -26,7 +25,6 @@ void StatePumpOff_pressure_low(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    //When(Method(statusHandler, printTime)).AlwaysReturn();
 
     StatePumpOff uut(statusHandler.get(), pressureSensor.get(), relayControl.get());
      
@@ -41,13 +39,11 @@ void StatePumpOff_pressure_low(void)
     Verify(Method(statusHandler, showMessage).Using(MessageId::LOW_PRESSURE_ERROR)).Exactly(0_Times);
   
     TEST_ASSERT_EQ_ENH(SystemState::PUMP_LOW_PRESSURE_WAIT, nextState);
-
 }
 
 
 void StatePumpOff_pressure_high(void)
 {
-
     When(Method(ArduinoFake(), millis)).Return(2003,MINUTES_ms(20));
     Mock<PressureSensor> pressureSensor;
     When(Method(pressureSensor, setup)).AlwaysReturn();
@@ -64,9 +60,7 @@ void StatePumpOff_pressure_high(void)
     When(Method(statusHandler, setup)).AlwaysReturn();
     When(Method(statusHandler, updatePressure)).AlwaysReturn();
     When(Method(statusHandler, showMessage)).AlwaysReturn();
-    //When(Method(statusHandler, printTime)).AlwaysReturn();
-
-
+ 
     StatePumpOff uut(statusHandler.get(), pressureSensor.get(), relayControl.get());
     
     uut.enter();
