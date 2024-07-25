@@ -4,3 +4,5 @@
 .vscode/launch.json
 .vscode/ipch
 .arduino_output
+src/secrets.h
+ota_passwords.ini

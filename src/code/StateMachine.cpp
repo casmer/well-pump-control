@@ -19,7 +19,7 @@
 // SOFTWARE.
 
 #include <StateMachine.h>
-#define PRINT_STATE
+// #define PRINT_STATE
 
 StateMachine::StateMachine(StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl) :
     _statePumpOff(statusHandler, pressureSensor, relayControl), 
@@ -48,6 +48,8 @@ SystemState StateMachine::tick()
 {
     
     SystemState nextState = getCurrentState().tick();
+    if (nextState!=_currentState)
+    {
         #ifdef PRINT_STATE
             Serial.print("State Change: ");
             Serial.print(static_cast<int>(_currentState));
@@ -55,8 +57,6 @@ SystemState StateMachine::tick()
             Serial.print(static_cast<int>(nextState));
             Serial.println("...");
         #endif
-    if (nextState!=_currentState)
-    {
         _states[static_cast<int>(nextState)]->enter();
         _currentState=nextState;
     }
