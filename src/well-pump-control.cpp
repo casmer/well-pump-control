@@ -54,8 +54,8 @@ int pressureCheckTime_ms = 200;
 int statusUpdateTime_ms = 200;
 int wifiStatusUpdateDelay_ms = 5000;
 // Pin Assignments
-int relayPin = D6;
-int blinkPin = D8;
+int relayPin = D4;
+int blinkPin = D3;
 int pressureSensorPin = A0;
 
 //delay objects
