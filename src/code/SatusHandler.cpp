@@ -24,6 +24,7 @@
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x3F for a 16 chars and 2 line display
 #include <StatusHandler.h>
+#include <Version.h>
 
 void StatusHandler::setup()
 {
@@ -82,14 +83,14 @@ void StatusHandler::printClock()
 
 }
 
-void StatusHandler::printPumpState()
+void StatusHandler::printPumpVersion()
 {
-  if (_lastPumpRunning!=_pumpRunning)
-  {
-    _lastPumpRunning=_pumpRunning;
-    lcd.setCursor(9,0);   //Move cursor to character 10 on line 1
-    lcd.print((_pumpRunning ? "+":"-"));
-  }
+
+    lcd.setCursor(6,0);   //Move cursor to character 10 on line 1
+    lcd.print("V");
+    lcd.setCursor(7,0);   //Move cursor to character 10 on line 1
+    lcd.print(VERSION);
+  
 }
 
 void StatusHandler::printTime(int line, int startPos, int timeInS)
@@ -146,7 +147,7 @@ void StatusHandler::printMessage()
 void StatusHandler::printAll()
 {
   printPressure();
-  printPumpState();
+  printPumpVersion();
   printClock();
   printMessage();
 }

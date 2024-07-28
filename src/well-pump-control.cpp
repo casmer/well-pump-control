@@ -27,6 +27,21 @@
 #include <StatusHandler.h>
 #include <PressureSensor.h>
 #include <StateMachine.h>
+#include <secrets.h>
+
+////// BEGIN OTA Headers and Variables
+#include <WiFiNINA.h>
+#include <ArduinoOTA.h>
+
+#include "secrets.h" 
+///////please enter your sensitive data in the Secret tab/arduino_secrets.h
+/////// Wifi Settings ///////
+char ssid[] = SECRET_SSID;      // your network SSID (name)
+char pass[] = SECRET_PASS;   // your network password
+int status = WL_IDLE_STATUS;
+void printWifiStatus();
+void setupOTUpdate();
+////// END OTA Headers and Variables
 
 #include "MAX6675.h"
 const int selectPin = D7;
@@ -37,15 +52,17 @@ uint32_t thermoCoupleSpeed = 500;
 int blinkTime_ms = 1000;
 int pressureCheckTime_ms = 200;
 int statusUpdateTime_ms = 200;
+int wifiStatusUpdateDelay_ms = 5000;
 // Pin Assignments
-int relayPin = D6;
-int blinkPin = D8;
+int relayPin = D4;
+int blinkPin = D3;
 int pressureSensorPin = A0;
 
 //delay objects
 millisDelay ledDelay;
 millisDelay pressureCheckDelay;
 millisDelay statusUpdateDelay;
+millisDelay wifiStatusUpdateDelay;
 
 // interface handlers
 RelayControl relayControl;
@@ -73,7 +90,7 @@ void setup() {
   relayControl.setDioPin(relayPin);
   pressureSensor.setup();
   Serial.begin(74880);
-  
+  setupOTUpdate();
   statusHandler.setup();
   
   SPI.begin();
@@ -84,6 +101,7 @@ void setup() {
   ledDelay.start(blinkTime_ms);
   pressureCheckDelay.start(pressureCheckTime_ms);
   statusUpdateDelay.start(statusUpdateTime_ms);
+  wifiStatusUpdateDelay.start(wifiStatusUpdateDelay_ms);
   
 }
 
@@ -106,6 +124,15 @@ void statusUpdate()
   }
 }
 
+void wifiStatusUpdate()
+{
+  if (wifiStatusUpdateDelay.justFinished())
+  {
+    printWifiStatus();
+    wifiStatusUpdateDelay.repeat();    
+  }
+}
+
 void processPressure()
 {
   if (pressureCheckDelay.justFinished()) 
@@ -115,6 +142,48 @@ void processPressure()
     pressureCheckDelay.repeat(); 
   } 
 }
+void setupOTUpdate()
+{
+   // check for the presence of the shield:
+  if (WiFi.status() == WL_NO_SHIELD) {
+    Serial.println("WiFi shield not present");
+    // don't continue:
+    while (true);
+  }
+
+  // attempt to connect to Wifi network:
+  while ( status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
+    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+    status = WiFi.begin(ssid, pass);
+  }
+
+  // start the WiFi OTA library with internal (flash) based storage
+  ArduinoOTA.begin(WiFi.localIP(), SECRET_UPLOAD_USER, SECRET_UPLOAD_PASSWORD, InternalStorage);
+
+  // you're connected now, so print out the status:
+  printWifiStatus();
+}
+
+void printWifiStatus() {
+  // print the SSID of the network you're attached to:
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+ 
+  // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
+
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  Serial.print("signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
+}
+
+ 
 // the loop function runs over and over again forever
 void loop() {
   //
@@ -123,6 +192,9 @@ void loop() {
   processPressure();
   blinkLed();
   statusUpdate();  
+  wifiStatusUpdate();
+  // check for WiFi OTA updates
+  ArduinoOTA.poll();
   
   delay(250);     //loop time.
 }
