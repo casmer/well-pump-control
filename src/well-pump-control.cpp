@@ -26,6 +26,7 @@
 #include <RelayControl.h>
 #include <StatusHandler.h>
 #include <PressureSensor.h>
+#include <TemperatureSensor.h>
 #include <StateMachine.h>
 #include <secrets.h>
 
@@ -43,24 +44,23 @@ void printWifiStatus();
 void setupOTUpdate();
 ////// END OTA Headers and Variables
 
-#include "MAX6675.h"
-const int selectPin = D7;
-MAX6675 thermoCouple(selectPin, &SPI);
-uint32_t thermoCoupleSpeed = 500; 
-
 // Configuration
 int blinkTime_ms = 1000;
 int pressureCheckTime_ms = 200;
+int tempSensorCheckTime_ms = 1000;
 int statusUpdateTime_ms = 200;
 int wifiStatusUpdateDelay_ms = 5000;
 // Pin Assignments
-int relayPin = D4;
-int blinkPin = D3;
-int pressureSensorPin = A0;
+uint8_t fanPin = D2;
+uint8_t relayPin = D4;
+uint8_t blinkPin = D3;
+uint8_t pressureSensorPin = A0;
+const uint8_t tempSensorSelectPin = D10;
 
 //delay objects
 millisDelay ledDelay;
 millisDelay pressureCheckDelay;
+millisDelay tempSensorReadDelay;
 millisDelay statusUpdateDelay;
 millisDelay wifiStatusUpdateDelay;
 
@@ -68,6 +68,7 @@ millisDelay wifiStatusUpdateDelay;
 RelayControl relayControl;
 StatusHandler statusHandler;
 PressureSensor pressureSensor;
+TemperatureSensor temperatureSensor(tempSensorSelectPin, &SPI);
 //state machine
 StateMachine stateMachine(statusHandler, pressureSensor, relayControl);
 
@@ -94,12 +95,12 @@ void setup() {
   statusHandler.setup();
   
   SPI.begin();
-  thermoCouple.begin();
-
+  temperatureSensor.setup();
   stateMachine.setup();
 
   ledDelay.start(blinkTime_ms);
   pressureCheckDelay.start(pressureCheckTime_ms);
+  tempSensorReadDelay.start(tempSensorCheckTime_ms);
   statusUpdateDelay.start(statusUpdateTime_ms);
   wifiStatusUpdateDelay.start(wifiStatusUpdateDelay_ms);
   
@@ -141,6 +142,30 @@ void processPressure()
     statusHandler.updatePressure(pressureSensor.getMeasuredPressure());
     pressureCheckDelay.repeat(); 
   } 
+}
+
+void processTemperature()
+{
+  if (tempSensorReadDelay.justFinished())
+  {
+
+    uint8_t result = temperatureSensor.readTemperature();
+    if (result == 0)
+    {
+      statusHandler.updateTemperature(temperatureSensor.getMeasuredTemperature_F());
+      Serial.print("Temp:");
+      Serial.print(temperatureSensor.getMeasuredTemperature_F(),3);
+      Serial.print(" F ");
+      Serial.print(temperatureSensor.getMeasuredTemperature(),3);
+      Serial.println(" C");
+    }
+    else
+    {
+      Serial.print("temp Read Error:");
+      Serial.println(static_cast<int>(result));
+    }
+    tempSensorReadDelay.repeat();
+  }
 }
 void setupOTUpdate()
 {
@@ -190,6 +215,7 @@ void loop() {
   stateMachine.tick();
   
   processPressure();
+  processTemperature();
   blinkLed();
   statusUpdate();  
   wifiStatusUpdate();

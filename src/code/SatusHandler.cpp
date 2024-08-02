@@ -53,6 +53,11 @@ void StatusHandler::updatePressure(int measuredPressure)
   _measuredPressure = measuredPressure;
 }
 
+void StatusHandler::updateTemperature(float measuredTemperature)
+{
+  _measuredTemperature = measuredTemperature;
+}
+
 void StatusHandler::updatePumpState(bool running)
 {
   _pumpRunning = running;
@@ -68,6 +73,19 @@ void StatusHandler::printPressure()
       lcd.print(_measuredPressure);
       
       _lastPressure=_measuredPressure;
+    }
+}
+
+void StatusHandler::printTemperature()
+{
+    if (_lastTemperature!=_measuredTemperature)
+    {
+      lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
+      lcd.print("T:      ");
+      lcd.setCursor(2,1);   //Move cursor to character 3 on line 2
+      lcd.print(_measuredTemperature, 1);
+      
+      _lastTemperature=_measuredTemperature;
     }
 }
 
@@ -126,15 +144,15 @@ void StatusHandler::printMessage()
 {
   if (_lastMessageId != _messageId)
   {
-    lcd.setCursor(0,1);   //Move cursor to character 1 on line 2
+    lcd.setCursor(8,1);   //Move cursor to character 1 on line 2
     switch (_messageId)
-    { //                                             ----------------
-      MESSAGE_HANDLER(MessageId::NO_MESSAGE,        "                ");
-      MESSAGE_HANDLER(MessageId::LOW_PRESSURE_ERROR,"Low Pressure Err");
-      MESSAGE_HANDLER(MessageId::PRESSURE_RECOVERY, "Pressure Recover");
-      MESSAGE_HANDLER(MessageId::LOW_PRESSURE_WAIT, "      Waiting...");
-      MESSAGE_HANDLER(MessageId::PUMP_OFF,          "        Pump Off");
-      MESSAGE_HANDLER(MessageId::PUMP_ON,           "         Pump On");
+    { //                                             --------
+      MESSAGE_HANDLER(MessageId::NO_MESSAGE,        "        ");
+      MESSAGE_HANDLER(MessageId::LOW_PRESSURE_ERROR,"  LP Err");
+      MESSAGE_HANDLER(MessageId::PRESSURE_RECOVERY, "  LP Fix");
+      MESSAGE_HANDLER(MessageId::LOW_PRESSURE_WAIT, " Wait...");
+      MESSAGE_HANDLER(MessageId::PUMP_OFF,          "Pump Off");
+      MESSAGE_HANDLER(MessageId::PUMP_ON,           " Pump On");
       
     default:
       lcd.print(" INVALID MESSAGE");
@@ -147,6 +165,7 @@ void StatusHandler::printMessage()
 void StatusHandler::printAll()
 {
   printPressure();
+  printTemperature();
   printPumpVersion();
   printClock();
   printMessage();

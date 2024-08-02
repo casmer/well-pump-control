@@ -18,48 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-#ifndef PRESSURESENSOR_H
-#define PRESSURESENSOR_H
-#include<ADS1015_WE.h> 
-#include<Wire.h>
-#define I2C_ADDRESS 0x48
+#ifndef TEMPERATURE_SENSOR_H
+#define TEMPERATURE_SENSOR_H
+
+#include "Arduino.h"
+#include "SPI.h"
+#include "MAX6675.h"
 
 class ADS1115_WE;
 
-class PressureSensor
+class TemperatureSensor
 {
+    
 public:
-    PressureSensor();
+    TemperatureSensor(uint8_t selectPin, SPIClass* SPI);
 
     virtual void setup();
-    virtual void readPressure();
-    virtual int getMeasuredPressure() { return _measuredPressure; }
+    virtual uint8_t  readTemperature();
+    virtual float getMeasuredTemperature() { return _measuredTemperature; }
+    virtual float getMeasuredTemperature_F() { return _measuredTemperature * (9.0f/5.0f)+32; }
 
 private:
-    float map(float& x, float& in_min, float& in_max, float& out_min, float& out_max);
-    const float clamp(const float& val, const float& lo, const float& hi);
-    ADS1115_WE _adc;
-
-
-
-    //TODO: add analog input measurement to positive voltage line, use two Analog inputs to measure value?
-    //Sesnor in garage - .5v = 0 PSI, 4.5v=100PSI
-
-
-    float _pressureSensorVoltageValue = 0.0f;
-    // sensor value at max PSI in millvolts
-    float _pressureSensor_mV_at_max_psi=4500.0f;
-    // sensor value at min PSI in millvolts
-    float _pressureSensor_mV_at_min_psi=500.0f;
-
-    // minimum value the presure sensor can measure.
-    float _pressureSensor_min_psi=0.0f;
-    // maximum value the presure sensor can measure.
-    float _pressureSensor_max_psi=150.0f;
-
-    int _measuredPressure = 0;
-    int _lastMeasuredPressure = 0;
-
+    MAX6675 _thermoCouple;
+    float _measuredTemperature = -250.0f;
 };
 
-#endif // PRESSURESENSOR_H
+#endif // TEMPERATURE_SENSOR_H
