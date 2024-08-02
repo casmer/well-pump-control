@@ -41,10 +41,12 @@ class StatusHandler
         virtual void updateTime(int timeInMs);
         virtual void showMessage(MessageId message);
         virtual void updatePressure(int measuredPressure);
+        virtual void updateTemperature(float measuredTemperature);
         virtual void updatePumpState(bool running);
         virtual void printAll();
     protected:
         virtual void printPressure();
+        virtual void printTemperature();
         virtual void printClock();
         virtual void printPumpVersion();
         virtual void printTime(int line, int startPos, int timeInS);
@@ -55,6 +57,8 @@ class StatusHandler
         MessageId _messageId = MessageId::NO_MESSAGE;
         int _lastPressure = -1;
         int _measuredPressure = 0;
+        int _lastTemperature = -1;
+        float _measuredTemperature = 0;
         int _lastTime_s = -1;
         int _currentTime_ms = 0;
         bool _pumpRunning=false;
