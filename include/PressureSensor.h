@@ -55,11 +55,11 @@ private:
     // minimum value the presure sensor can measure.
     float _pressureSensor_min_psi=0.0f;
     // maximum value the presure sensor can measure.
-    float _pressureSensor_max_psi=100.0f;
+    float _pressureSensor_max_psi=150.0f;
 
     int _measuredPressure = 0;
     int _lastMeasuredPressure = 0;
 
 };
 
-#endif
+#endif // PRESSURESENSOR_H
