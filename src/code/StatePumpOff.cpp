@@ -37,6 +37,5 @@ SystemState StatePumpOff::tick()
 
 void StatePumpOff::enterState() 
 {
-    _pumpControl.Off();
     _statusHandler.showMessage(MessageId::PUMP_OFF);
 };

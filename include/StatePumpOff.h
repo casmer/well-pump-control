@@ -26,7 +26,7 @@ class StatePumpOff : public State
 {
     public:
         StatePumpOff(StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl) :
-        State(statusHandler, pressureSensor, relayControl){};
+        State(SystemState::PUMP_OFF, statusHandler, pressureSensor, relayControl){};
 
         SystemState tick() override;
     protected:

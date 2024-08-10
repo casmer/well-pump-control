@@ -45,7 +45,6 @@ void StatePumpLowError::enterState()
     #ifdef DEBUG_PRINT
         //Serial.print(5,10);
     #endif
-    _pumpControl.Off();
     _statusHandler.showMessage(MessageId::LOW_PRESSURE_ERROR);
 };
 

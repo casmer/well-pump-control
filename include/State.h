@@ -36,23 +36,28 @@ enum class SystemState : int
 class State
 {
     public:
-        State( StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl):
+        State(SystemState state, StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl, bool pumpOn = false):
         _statusHandler(statusHandler),
         _pressureSensor(pressureSensor),
         _pumpControl(relayControl),
+        _thisState(state),
+        _pumpOn(pumpOn),
         _state_entry_time(0)
          {};
         virtual SystemState tick() =0;
+        bool pumpOn() { return _pumpOn; };
         void enter();
         unsigned long get_state_time_ms();
         unsigned long get_last_state_time_ms();
-
+        SystemState buttonPress(uint8_t button_number) { return _thisState; };
     protected:
         virtual void enterState() {};
         StatusHandler&  _statusHandler;
         PressureSensor& _pressureSensor;
-        RelayControl&  _pumpControl;
+        const SystemState _thisState;
     private:
+        bool _pumpOn;
+        RelayControl&  _pumpControl;
         unsigned long _state_entry_time;
         unsigned long _last_state_time;
 };

@@ -55,5 +55,4 @@ SystemState StatePumpLowPressureWait::tick()
 void StatePumpLowPressureWait::enterState() 
 {
     _statusHandler.showMessage(MessageId::LOW_PRESSURE_WAIT);
-    _pumpControl.Off();
 };

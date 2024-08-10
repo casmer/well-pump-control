@@ -23,6 +23,14 @@
 
 void State::enter()
 {
+    if (_pumpOn)
+    {
+        _pumpControl.On();
+    }
+    else
+    {
+        _pumpControl.Off();
+    }
     _state_entry_time=millis();
     _last_state_time = _state_entry_time;
     enterState();

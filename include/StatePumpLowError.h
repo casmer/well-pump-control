@@ -26,7 +26,7 @@ class StatePumpLowError : public State
 {
     public:
         StatePumpLowError(StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl) :
-        State(statusHandler, pressureSensor, relayControl){};
+        State(SystemState::PUMP_LOW_PRESSURE_ERROR, statusHandler, pressureSensor, relayControl){};
 
         SystemState tick() override;
     protected:

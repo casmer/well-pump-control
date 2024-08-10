@@ -43,5 +43,4 @@ SystemState StatePumpOn::tick()
 void StatePumpOn::enterState() 
 {
     _statusHandler.showMessage(MessageId::PUMP_ON);
-    _pumpControl.On();
 };

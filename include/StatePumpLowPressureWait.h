@@ -26,7 +26,7 @@ class StatePumpLowPressureWait : public State
 {
     public:
         StatePumpLowPressureWait(StatusHandler& statusHandler, PressureSensor& pressureSensor, RelayControl& relayControl) :
-        State(statusHandler, pressureSensor, relayControl){};
+        State(SystemState::PUMP_LOW_PRESSURE_WAIT, statusHandler, pressureSensor, relayControl){};
 
         SystemState tick() override;
     protected:
